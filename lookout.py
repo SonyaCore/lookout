@@ -1,12 +1,15 @@
-#!/usr/bin/env python
-
-PORT = 9890
+#!/usr/bin/env python3
 
 import flask, os, sys, time, psutil, json, socket
 from tornado.wsgi import WSGIContainer
 from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
 from multiprocessing import Process, Manager
+
+try :
+	PORT = sys.argv[1]
+except :
+	PORT = 9890
 
 if getattr(sys, 'frozen', None):
 	static = os.path.join(sys._MEIPASS, 'static')
@@ -50,9 +53,7 @@ def update(stats):
 if __name__ == '__main__':
 	stats = Manager().dict()
 	Process(target=update, args=(stats, )).start()
-	if len(sys.argv) > 1:
-		PORT = sys.argv[1]
 	server = HTTPServer(WSGIContainer(app))
-	print 'Now listening on port ' + str(PORT)
+	print('Listening on port ' + str(PORT))
 	server.listen(PORT)
 	IOLoop.instance().start()
